@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 
 import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from "firebase/auth";
-import { getDatabase, ref, set, onValue, push } from "firebase/database"
+import { getDatabase, ref, set, onValue, push, child } from "firebase/database"
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgS3LF7GOjLQSH1peav7__cXjuKicSLGE",
@@ -51,7 +51,8 @@ export const newGame = (user) => {
   const newGameRef = push(gameRef, {
     gameID: randomID,
     player1: userInfo,
-    player2: "",
+    player2: {displayName: "", uid: ""},
+    turn: "x",
     values: {
       0: "",
       1: "",
@@ -64,4 +65,16 @@ export const newGame = (user) => {
       8: ""
     }
   })
-} 
+
+  return newGameRef.key
+}
+
+export const addPlayer2 = (user, gameKey) => {
+  const userInfo = {
+    displayName: user.displayName,
+    uid: user.uid
+  }
+
+  const gameRef = ref(db, "games/"+gameKey+"/player2")
+  set(gameRef, userInfo)
+}

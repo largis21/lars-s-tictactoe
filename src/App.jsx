@@ -8,8 +8,6 @@ import { auth } from './services/firebase';
 // React components
 import DefaultLandingPage from './components/DefaultLandingPage';
 import SignoutGoogleButton from './components/auth/SignoutGoogle';
-import NewGameButton from './components/game/buttons/NewGameButton';
-import JoinGame from './components/joinGame/JoinGame';
 import GameArea from './components/game/GameArea';
 
 function App() {
@@ -31,10 +29,13 @@ function App() {
     const userFullName = user.displayName
     return (
       <div className="App">
-        <h1>Hei {userFullName} 😃</h1>
-        <SignoutGoogleButton />
-        <NewGameButton user={user}/>
+        <div className="content">
+        <div className="navbar">
+          <h1>Hei {userFullName} 😃</h1>
+          <SignoutGoogleButton />
+        </div>
         <GameArea user={user} />
+        </div>
       </div>
     );
   }
