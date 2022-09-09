@@ -1,67 +1,60 @@
 import { useState, useEffect } from "react";
 import { db, newGame } from "../../services/firebase"
 import { ref, get, onValue, query, orderByChild } from "firebase/database"
-import { addPlayer2 } from "../../services/firebase";
-
-// React components
+import { addNewPlayer, addToBoard } from "../../services/firebase";
+import { contains } from "@firebase/util";
+import { wonGameStates } from "./wonGameStates";
 
 const GameArea = (props) => {
   const [DBData, setDBData] = useState("")
   const [gameData, setGameData] = useState("") //518926
   const [joinGameTextValue, setJoinGameTextValue] = useState("")
+  const [currentGameKey, setCurrentGameKey] = useState("")
   
    // Keep gamedata updated
   const gameRef = ref(db, "games/")
   useEffect(() => {
     onValue(gameRef, (snapshot) => {
-      onUpdate(snapshot.val())
+      setDBData(snapshot.val())
     })
   }, [])
-
-  const onUpdate = (data) => {
-    setDBData(data)
-  }
 
   const handleJoinGameClick = () => {
     if (joinGameTextValue) {
       for (var gameKey in DBData) {
         if (DBData[gameKey].gameID == joinGameTextValue) {
-          // USE FOR TESTING ONLY | CORRECT CODE BENEATH
-          if (!DBData[gameKey].player2.uid && !DBData[gameKey].player2.displayName) {
-            setGameData(DBData[gameKey])
-            addPlayer2(props.user, gameKey)
+          if (!DBData[gameKey].player1.displayName) {
+            setCurrentGameKey(gameKey)
+            addNewPlayer(props.user, gameKey, "1")
+          } else if (!DBData[gameKey].player2.displayName) {
+            setCurrentGameKey(gameKey)
+            addNewPlayer(props.user, gameKey, "2")
           } else {
-            setGameData(DBData[gameKey])
+            //FOR DEV USE
+            setCurrentGameKey(gameKey)
           }
-
-          // if (!DBData[gameKey].player2.uid && !DBData[gameKey].player2.displayName) {
-          //   setGameData(DBData[gameKey])
-          //   addPlayer2(props.user, gameKey)
-          // } else {
-          //   console.log("already full")
-          // }
+          }
         }
-      }
-    } else {
-      console.log("no code") 
+      } else {
+        console.log("no code")  
     }
   }
 
-  const joinGame = (newGameKey) => {
-    setGameData(DBData[newGameKey])
-  }
+  useEffect(() => {
+    setGameData(DBData[currentGameKey])
+  })
 
   const handleJoinGameTextChange = event => {
     setJoinGameTextValue(event.target.value)
   }
 
   const handleLeaveGameClick = event => {
-    setGameData("")
+    setCurrentGameKey("")
   }
-//databasen oppdatera ikkje fort nok elns vekkje ass
+
   const newGameClickHandler = () => {
     const newGameRef = newGame(props.user)
-    joinGame(newGameRef)
+    setCurrentGameKey(newGameRef)
   }
 
   if (!gameData) {
@@ -86,12 +79,64 @@ const GameArea = (props) => {
     const player2DisplayName = gameData.player2.displayName
     const player2UID = gameData.player2.uid
 
+    const gameState = gameData.gameState
+    const gameTurn = gameData.gameState.turn
+
+    const handleGameButtonClicked = event => {
+      gameButtonClicked(event.target.className)
+    }
+
+    const gameButtonClicked = (buttonClicked) => {
+      if (gameTurn == "x" && props.user.uid == player1UID) {
+        if (!gameState[buttonClicked]) {
+          addToBoard(gameTurn, buttonClicked, currentGameKey)
+        } 
+      }
+
+      if (gameTurn == "o" && props.user.uid == player2UID) {
+        if (!gameState[buttonClicked]) {
+          addToBoard(gameTurn, buttonClicked, currentGameKey)
+        } 
+      }
+
+      validateGameState()
+    }
+
+    //validation
+
+    const validateGameState = () => {
+      for (var item in gameState) {
+        if (gameState[item] != "" && item != "turn") {
+          console.log(gameState[item])
+        }
+      }
+    }
+
     return(
-      <div>
-        <button onClick={handleLeaveGameClick}>Leave Game</button>
-        <h2>Current Game: {currentGameID}</h2>
-        <h3>Player 1: {player1DisplayName}</h3>
-        <h3>Player 2: {player2DisplayName}</h3>
+      <div className="game-root">
+        <div className="game-info">
+          <h3>Current Game: {currentGameID}</h3>
+          <h4><span>❌</span> {player1DisplayName}</h4>
+          <h4><span>⭕</span> {player2DisplayName}</h4>
+          <button className="red-button" onClick={handleLeaveGameClick}>Leave Game</button>
+        </div>
+        <div className="game-container">
+          <div className="row">
+            <button className="0" onClick={handleGameButtonClicked}>{gameState[0]}</button>
+            <button className="1" onClick={handleGameButtonClicked}>{gameState[1]}</button>
+            <button className="2" onClick={handleGameButtonClicked}>{gameState[2]}</button>
+          </div>
+          <div className="row">
+            <button className="3" onClick={handleGameButtonClicked}>{gameState[3]}</button>
+            <button className="4" onClick={handleGameButtonClicked}>{gameState[4]}</button>
+            <button className="5" onClick={handleGameButtonClicked}>{gameState[5]}</button>
+          </div>
+          <div className="row">
+            <button className="6" onClick={handleGameButtonClicked}>{gameState[6]}</button>
+            <button className="7" onClick={handleGameButtonClicked}>{gameState[7]}</button>
+            <button className="8" onClick={handleGameButtonClicked}>{gameState[8]}</button>
+          </div>
+        </div>
       </div>
     )
   }

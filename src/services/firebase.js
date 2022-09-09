@@ -39,6 +39,11 @@ export const signOffWithGoogle = () => {
   signOut(auth, googleProvider)
 }
 
+export const delDB = () => {
+  const dbRef = ref(db, "games/")
+  set(dbRef, "")
+}
+
 export const newGame = (user) => {
   const randomID = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -52,8 +57,8 @@ export const newGame = (user) => {
     gameID: randomID,
     player1: userInfo,
     player2: {displayName: "", uid: ""},
-    turn: "x",
-    values: {
+    gameState: {
+      turn: "x",
       0: "",
       1: "",
       2: "",
@@ -69,12 +74,33 @@ export const newGame = (user) => {
   return newGameRef.key
 }
 
-export const addPlayer2 = (user, gameKey) => {
+export const addNewPlayer = (user, gameKey, playerNr) => {
   const userInfo = {
     displayName: user.displayName,
     uid: user.uid
   }
 
-  const gameRef = ref(db, "games/"+gameKey+"/player2")
-  set(gameRef, userInfo)
+  const playerRef = ref(db, "games/"+gameKey+"/player"+playerNr)
+  set(playerRef, userInfo)
+}
+
+export const removePlayer2 = (user, gameKey) => {
+  const player2Ref = ref(db, "games/"+gameKey+"/player2")
+  set(player2Ref, {displayName: "", uid: ""})
+}
+
+export const addToBoard = (turn, position, gameKey) => {
+  //combined some stuff here, might not be optimal for editing but works
+  var turnInEmoji;
+  const turnRef = ref(db, "games/"+gameKey+"/gameState/turn")
+  if (turn == "x") {
+    turnInEmoji = "❌"
+    set(turnRef, "o")
+  } else {
+    turnInEmoji = "⭕"
+    set(turnRef, "x")
+  }
+  const positionRef = ref(db, "games/"+gameKey+"/gameState/"+position)
+  set(positionRef, turnInEmoji)
+
 }

@@ -10,6 +10,9 @@ import DefaultLandingPage from './components/DefaultLandingPage';
 import SignoutGoogleButton from './components/auth/SignoutGoogle';
 import GameArea from './components/game/GameArea';
 
+// React components for dev use
+import DelDBButton from './components/dev/DelDBButton';
+
 function App() {
   const [user, setUser] = useState("");
 
@@ -30,11 +33,12 @@ function App() {
     return (
       <div className="App">
         <div className="content">
-        <div className="navbar">
-          <h1>Hei {userFullName} 😃</h1>
-          <SignoutGoogleButton />
-        </div>
-        <GameArea user={user} />
+          <div className="navbar">
+            <h1>Hei, {userFullName} 😃</h1>
+            <SignoutGoogleButton />
+          </div>
+          <GameArea user={user} />
+          <DelDBButton />
         </div>
       </div>
     );

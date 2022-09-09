@@ -1,3 +1,9 @@
+/* for dev use only*/
+#del-db-button {
+  margin-top: 5rem;
+}
+/*^^^*/
+
 * {
   margin: 0;
   padding: 0;
@@ -30,7 +36,7 @@ h4 {
 }
 
 .content {
-  width: 80vw;
+  width: 90vw;
 }
 
 .navbar {
@@ -66,4 +72,38 @@ button {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-weight: 600;
   font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(.9);
+}
+
+.red-button {
+  background-color: rgb(252, 50, 50);
+  color: white;
+}
+
+
+
+.game-root {
+  position: relative;
+}
+
+.game-container button {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 2rem;
+  margin: .5rem;
+  vertical-align: middle;
+  font-size: 32px;
+}
+
+.game-info {
+  text-align: left;
+  position: absolute;
+}
+
+.game-info h3{
+  margin-top: .5rem;
 }
