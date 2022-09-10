@@ -84,8 +84,6 @@ button:hover {
   color: white;
 }
 
-
-
 .game-root {
   position: relative;
 }
@@ -106,4 +104,80 @@ button:hover {
 
 .game-info h3{
   margin-top: .5rem;
+}
+
+.winner-text-container {
+  position: relative;
+  height: 100%;
+}
+
+.winner-text {
+  color: green;
+  z-index: top;
+  font-size: 64px;
+  width: 100%;
+  height: 100%;
+}
+
+.winner-text-green {
+  color: green;
+}
+
+.winner-text-red {
+  color: rgb(252, 50, 50);
+}
+
+.winner-text-red {
+  color: rgb(252, 215, 50);
+}
+
+.join-game-error-text {
+  color: rgb(252, 50, 50);
+}
+
+@media screen and (max-width: 1000px) {
+  .content {
+    width: 95vw;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .game-info {
+    position: relative;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  button {
+    padding: .6rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .game-container button {
+    width: 5rem;
+    height: 5rem;
+    border-radius: .4em;
+  }
+
+  .navbar {
+    margin-bottom: 0;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .game-container button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: .3em;
+    margin: .2rem;
+    font-size: 20px;
+  }
+
+  .navbar {
+    margin-bottom: 0;
+  }
 }

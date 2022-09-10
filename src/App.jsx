@@ -38,7 +38,6 @@ function App() {
             <SignoutGoogleButton />
           </div>
           <GameArea user={user} />
-          <DelDBButton />
         </div>
       </div>
     );

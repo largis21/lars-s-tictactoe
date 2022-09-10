@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 
 import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from "firebase/auth";
-import { getDatabase, ref, set, onValue, push, child } from "firebase/database"
+import { getDatabase, ref, set, onValue, push, child, remove } from "firebase/database"
+import { validateGameState } from "../components/game/validateGameState";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgS3LF7GOjLQSH1peav7__cXjuKicSLGE",
@@ -89,7 +90,12 @@ export const removePlayer2 = (user, gameKey) => {
   set(player2Ref, {displayName: "", uid: ""})
 }
 
-export const addToBoard = (turn, position, gameKey) => {
+export const removeGame = (gameKey) => {
+  const gameRef = ref(db, "games/"+gameKey)
+  remove(gameRef)
+}
+
+export const addToBoard = (turn, position, gameKey, gameState) => {
   //combined some stuff here, might not be optimal for editing but works
   var turnInEmoji;
   const turnRef = ref(db, "games/"+gameKey+"/gameState/turn")
@@ -102,5 +108,4 @@ export const addToBoard = (turn, position, gameKey) => {
   }
   const positionRef = ref(db, "games/"+gameKey+"/gameState/"+position)
   set(positionRef, turnInEmoji)
-
 }

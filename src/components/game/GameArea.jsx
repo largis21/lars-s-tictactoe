@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
-import { db, newGame } from "../../services/firebase"
+import { db, newGame, removeGame } from "../../services/firebase"
 import { ref, get, onValue, query, orderByChild } from "firebase/database"
 import { addNewPlayer, addToBoard } from "../../services/firebase";
 import { contains } from "@firebase/util";
-import { wonGameStates } from "./wonGameStates";
+import { validateGameState } from "./validateGameState";
 
 const GameArea = (props) => {
   const [DBData, setDBData] = useState("")
   const [gameData, setGameData] = useState("") //518926
   const [joinGameTextValue, setJoinGameTextValue] = useState("")
   const [currentGameKey, setCurrentGameKey] = useState("")
+
+  const [winnerText, setWinnerText] = useState("")
+  const [winnerTextClasses, setWinnerTextClasses] = useState("")
+
+  const [joinGameErrorCode, setJoinGameErrorCode] = useState("")
+
   
    // Keep gamedata updated
   const gameRef = ref(db, "games/")
@@ -20,9 +26,11 @@ const GameArea = (props) => {
   }, [])
 
   const handleJoinGameClick = () => {
+    var foundGame = false;
     if (joinGameTextValue) {
       for (var gameKey in DBData) {
         if (DBData[gameKey].gameID == joinGameTextValue) {
+          foundGame = true
           if (!DBData[gameKey].player1.displayName) {
             setCurrentGameKey(gameKey)
             addNewPlayer(props.user, gameKey, "1")
@@ -30,28 +38,60 @@ const GameArea = (props) => {
             setCurrentGameKey(gameKey)
             addNewPlayer(props.user, gameKey, "2")
           } else {
-            //FOR DEV USE
-            setCurrentGameKey(gameKey)
+            setJoinGameErrorCode("Game is full")
           }
           }
         }
+        if (!foundGame) setJoinGameErrorCode("Could not find game")
       } else {
-        console.log("no code")  
+        setJoinGameErrorCode("Please enter a code")
     }
   }
 
   useEffect(() => {
     setGameData(DBData[currentGameKey])
+    const validation = validateGameState(gameData)
+    if (validation) {
+      gameWon(validation)
+    }
   })
+
+  const gameWon = (validation) => {
+    if (validation == "draw") {
+      setWinnerText("Draw!")
+      setWinnerTextClasses("winner-text winner-text-yellow")
+    }
+    if (validation == "❌" && props.user.uid == gameData.player1.uid) {
+      setWinnerText("You won!")
+      setWinnerTextClasses("winner-text winner-text-green")
+    } else if (validation == "⭕" && props.user.uid == gameData.player2.uid) {
+      setWinnerText("You won!")
+      setWinnerTextClasses("winner-text winner-text-green")
+    } else if (validation == "❌" && props.user.uid == gameData.player2.uid) {
+      setWinnerText("You lost :(")
+      setWinnerTextClasses("winner-text winner-text-red")
+    } else if (validation == "⭕" && props.user.uid == gameData.player1.uid) {
+      setWinnerText("You lost :(")
+      setWinnerTextClasses("winner-text winner-text-red")
+    }
+
+    setTimeout(() => {
+      removeGame(currentGameKey, 3000)
+      setCurrentGameKey("")
+      setJoinGameTextValue("")
+      setGameData("")
+      setWinnerText("")
+      setWinnerTextClasses("")
+    }, 3000);
+  }
 
   const handleJoinGameTextChange = event => {
     setJoinGameTextValue(event.target.value)
+    setJoinGameErrorCode("")
   }
-
   const handleLeaveGameClick = event => {
     setCurrentGameKey("")
   }
-
   const newGameClickHandler = () => {
     const newGameRef = newGame(props.user)
     setCurrentGameKey(newGameRef)
@@ -67,6 +107,7 @@ const GameArea = (props) => {
             <input onChange={handleJoinGameTextChange} type="text" placeholder="Six digit code:"/>
             <button onClick={handleJoinGameClick}>Join Game</button>
           </div>
+          <h3 className="join-game-error-text">{joinGameErrorCode}</h3>
         </div>
       </div>
     )
@@ -89,26 +130,14 @@ const GameArea = (props) => {
     const gameButtonClicked = (buttonClicked) => {
       if (gameTurn == "x" && props.user.uid == player1UID) {
         if (!gameState[buttonClicked]) {
-          addToBoard(gameTurn, buttonClicked, currentGameKey)
+          addToBoard(gameTurn, buttonClicked, currentGameKey, gameState)
         } 
       }
 
       if (gameTurn == "o" && props.user.uid == player2UID) {
         if (!gameState[buttonClicked]) {
-          addToBoard(gameTurn, buttonClicked, currentGameKey)
+          addToBoard(gameTurn, buttonClicked, currentGameKey, gameState)
         } 
-      }
-
-      validateGameState()
-    }
-
-    //validation
-
-    const validateGameState = () => {
-      for (var item in gameState) {
-        if (gameState[item] != "" && item != "turn") {
-          console.log(gameState[item])
-        }
       }
     }
 
@@ -121,6 +150,9 @@ const GameArea = (props) => {
           <button className="red-button" onClick={handleLeaveGameClick}>Leave Game</button>
         </div>
         <div className="game-container">
+          <div className="winner-text-container">
+            <h3 className={winnerTextClasses}>{winnerText}</h3>
+          </div>
           <div className="row">
             <button className="0" onClick={handleGameButtonClicked}>{gameState[0]}</button>
             <button className="1" onClick={handleGameButtonClicked}>{gameState[1]}</button>
