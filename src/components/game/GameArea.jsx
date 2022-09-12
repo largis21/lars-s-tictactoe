@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { db, newGame, removeGame } from "../../services/firebase"
+import { db, newGame, removeGame, resetGame } from "../../services/firebase"
 import { ref, get, onValue, query, orderByChild } from "firebase/database"
 import { addNewPlayer, addToBoard } from "../../services/firebase";
-import { contains } from "@firebase/util";
 import { validateGameState } from "./validateGameState";
 
 const GameArea = (props) => {
   const [DBData, setDBData] = useState("")
-  const [gameData, setGameData] = useState("") //518926
+  const [gameData, setGameData] = useState("")
   const [joinGameTextValue, setJoinGameTextValue] = useState("")
   const [currentGameKey, setCurrentGameKey] = useState("")
 
@@ -61,25 +60,22 @@ const GameArea = (props) => {
       setWinnerText("Draw!")
       setWinnerTextClasses("winner-text winner-text-yellow")
     }
-    if (validation == "❌" && props.user.uid == gameData.player1.uid) {
+    if (validation == "x" && props.user.uid == gameData.player1.uid) {
       setWinnerText("You won!")
       setWinnerTextClasses("winner-text winner-text-green")
-    } else if (validation == "⭕" && props.user.uid == gameData.player2.uid) {
+    } else if (validation == "o" && props.user.uid == gameData.player2.uid) {
       setWinnerText("You won!")
       setWinnerTextClasses("winner-text winner-text-green")
-    } else if (validation == "❌" && props.user.uid == gameData.player2.uid) {
+    } else if (validation == "x" && props.user.uid == gameData.player2.uid) {
       setWinnerText("You lost :(")
       setWinnerTextClasses("winner-text winner-text-red")
-    } else if (validation == "⭕" && props.user.uid == gameData.player1.uid) {
+    } else if (validation == "o" && props.user.uid == gameData.player1.uid) {
       setWinnerText("You lost :(")
       setWinnerTextClasses("winner-text winner-text-red")
     }
 
     setTimeout(() => {
-      removeGame(currentGameKey, 3000)
-      setCurrentGameKey("")
-      setJoinGameTextValue("")
-      setGameData("")
+      resetGame(currentGameKey, gameData)
       setWinnerText("")
       setWinnerTextClasses("")
     }, 3000);
@@ -123,6 +119,11 @@ const GameArea = (props) => {
     const gameState = gameData.gameState
     const gameTurn = gameData.gameState.turn
 
+    const gameStateInEmoji = {
+      x: "❌",
+      o: "⭕"
+    }
+
     const handleGameButtonClicked = event => {
       gameButtonClicked(event.target.className)
     }
@@ -154,19 +155,19 @@ const GameArea = (props) => {
             <h3 className={winnerTextClasses}>{winnerText}</h3>
           </div>
           <div className="row">
-            <button className="0" onClick={handleGameButtonClicked}>{gameState[0]}</button>
-            <button className="1" onClick={handleGameButtonClicked}>{gameState[1]}</button>
-            <button className="2" onClick={handleGameButtonClicked}>{gameState[2]}</button>
+            <button className="0" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[0]]}</button>
+            <button className="1" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[1]]}</button>
+            <button className="2" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[2]]}</button>
           </div>
           <div className="row">
-            <button className="3" onClick={handleGameButtonClicked}>{gameState[3]}</button>
-            <button className="4" onClick={handleGameButtonClicked}>{gameState[4]}</button>
-            <button className="5" onClick={handleGameButtonClicked}>{gameState[5]}</button>
+            <button className="3" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[3]]}</button>
+            <button className="4" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[4]]}</button>
+            <button className="5" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[5]]}</button>
           </div>
           <div className="row">
-            <button className="6" onClick={handleGameButtonClicked}>{gameState[6]}</button>
-            <button className="7" onClick={handleGameButtonClicked}>{gameState[7]}</button>
-            <button className="8" onClick={handleGameButtonClicked}>{gameState[8]}</button>
+            <button className="6" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[6]]}</button>
+            <button className="7" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[7]]}</button>
+            <button className="8" onClick={handleGameButtonClicked}>{gameStateInEmoji[gameState[8]]}</button>
           </div>
         </div>
       </div>

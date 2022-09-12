@@ -96,16 +96,36 @@ export const removeGame = (gameKey) => {
 }
 
 export const addToBoard = (turn, position, gameKey, gameState) => {
-  //combined some stuff here, might not be optimal for editing but works
-  var turnInEmoji;
   const turnRef = ref(db, "games/"+gameKey+"/gameState/turn")
   if (turn == "x") {
-    turnInEmoji = "❌"
     set(turnRef, "o")
   } else {
-    turnInEmoji = "⭕"
     set(turnRef, "x")
   }
   const positionRef = ref(db, "games/"+gameKey+"/gameState/"+position)
-  set(positionRef, turnInEmoji)
+  set(positionRef, turn)
+}
+
+export const resetGame = (gameKey, gameData) => {
+  const newPlayer1 = gameData.player2
+  const newPlayer2 = gameData.player1
+
+  const gameRef = ref(db, '/games/'+gameKey);
+  set(gameRef, {
+    gameID: gameData.gameID,
+    player1: newPlayer1,
+    player2: newPlayer2,
+    gameState: {
+      turn: "x",
+      0: "",
+      1: "",
+      2: "",
+      3: "",
+      4: "",
+      5: "",
+      6: "",
+      7: "",
+      8: ""
+      }
+    })
 }
