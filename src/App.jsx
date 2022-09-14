@@ -9,6 +9,7 @@ import { auth } from './services/firebase';
 import DefaultLandingPage from './components/DefaultLandingPage';
 import SignoutGoogleButton from './components/auth/SignoutGoogle';
 import GameArea from './components/game/GameArea';
+import Chat from './components/chat/Chat';
 
 // React components for dev use
 import DelDBButton from './components/dev/DelDBButton';
@@ -38,6 +39,7 @@ function App() {
             <SignoutGoogleButton />
           </div>
           <GameArea user={user} />
+          <Chat user={user}/>
         </div>
       </div>
     );

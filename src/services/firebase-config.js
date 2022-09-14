@@ -5,13 +5,13 @@ import { getDatabase, ref, set, onValue, push, child, remove } from "firebase/da
 import { validateGameState } from "../components/game/validateGameState";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDlAy-5XHe6q5PHU9AgjaI6Q5ihKPp7hZg",
-  authDomain: "lars-s-tictactoe-dev.firebaseapp.com",
-  databaseURL: "https://lars-s-tictactoe-dev-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "lars-s-tictactoe-dev",
-  storageBucket: "lars-s-tictactoe-dev.appspot.com",
-  messagingSenderId: "727834268111",
-  appId: "1:727834268111:web:2ecea16a1cdeba7253c2ba"
+  apiKey: "AIzaSyCgS3LF7GOjLQSH1peav7__cXjuKicSLGE",
+  authDomain: "lars-s-tictactoe.firebaseapp.com",
+  projectId: "lars-s-tictactoe",
+  storageBucket: "lars-s-tictactoe.appspot.com",
+  messagingSenderId: "219129050270",
+  appId: "1:219129050270:web:1fd6ad46492b1bc4f1378f",
+  databaseURL: "https://lars-s-tictactoe-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 
 export const app = initializeApp(firebaseConfig);
@@ -85,9 +85,9 @@ export const addNewPlayer = (user, gameKey, playerNr) => {
   set(playerRef, userInfo)
 }
 
-export const removePlayer = (gameKey, player) => {
-  const playerRef = ref(db, "games/"+gameKey+"/"+ player)
-  set(playerRef, {displayName: "", uid: ""})
+export const removePlayer2 = (user, gameKey) => {
+  const player2Ref = ref(db, "games/"+gameKey+"/player2")
+  set(player2Ref, {displayName: "", uid: ""})
 }
 
 export const removeGame = (gameKey) => {

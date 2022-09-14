@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { db, newGame, removeGame, resetGame } from "../../services/firebase"
+import { db, newGame, removeGame, removePlayer, resetGame } from "../../services/firebase"
 import { ref, get, onValue, query, orderByChild } from "firebase/database"
 import { addNewPlayer, addToBoard } from "../../services/firebase";
 import { validateGameState } from "./validateGameState";
@@ -15,7 +15,6 @@ const GameArea = (props) => {
 
   const [joinGameErrorCode, setJoinGameErrorCode] = useState("")
 
-  
    // Keep gamedata updated
   const gameRef = ref(db, "games/")
   useEffect(() => {
@@ -23,29 +22,6 @@ const GameArea = (props) => {
       setDBData(snapshot.val())
     })
   }, [])
-
-  const handleJoinGameClick = () => {
-    var foundGame = false;
-    if (joinGameTextValue) {
-      for (var gameKey in DBData) {
-        if (DBData[gameKey].gameID == joinGameTextValue) {
-          foundGame = true
-          if (!DBData[gameKey].player1.displayName) {
-            setCurrentGameKey(gameKey)
-            addNewPlayer(props.user, gameKey, "1")
-          } else if (!DBData[gameKey].player2.displayName) {
-            setCurrentGameKey(gameKey)
-            addNewPlayer(props.user, gameKey, "2")
-          } else {
-            setJoinGameErrorCode("Game is full")
-          }
-          }
-        }
-        if (!foundGame) setJoinGameErrorCode("Could not find game")
-      } else {
-        setJoinGameErrorCode("Please enter a code")
-    }
-  }
 
   useEffect(() => {
     setGameData(DBData[currentGameKey])
@@ -85,9 +61,47 @@ const GameArea = (props) => {
     setJoinGameTextValue(event.target.value)
     setJoinGameErrorCode("")
   }
-  const handleLeaveGameClick = event => {
-    setCurrentGameKey("")
+
+  const handleJoinGameClick = () => {
+    var foundGame = false;
+    if (joinGameTextValue) {
+      for (var gameKey in DBData) {
+        if (DBData[gameKey].gameID == joinGameTextValue) {
+          foundGame = true
+          if (!DBData[gameKey].player1.displayName) {
+            setCurrentGameKey(gameKey)
+            addNewPlayer(props.user, gameKey, "1")
+          } else if (!DBData[gameKey].player2.displayName) {
+            setCurrentGameKey(gameKey)
+            addNewPlayer(props.user, gameKey, "2")
+          } else {
+            setJoinGameErrorCode("Game is full")
+          }
+          }
+        }
+        if (!foundGame) setJoinGameErrorCode("Could not find game")
+      } else {
+        setJoinGameErrorCode("Please enter a code")
+    }
   }
+
+  const handleLeaveGameClick = event => {
+    var playerCount = 0;
+    if (gameData.player1.uid) playerCount++
+    if (gameData.player2.uid) playerCount++
+
+    if (playerCount < 2) {
+      removeGame(currentGameKey)
+    } else {
+      if (gameData.player1.uid == props.user.uid) removePlayer(currentGameKey, "player1")
+      if (gameData.player2.uid == props.user.uid) removePlayer(currentGameKey, "player2")
+    }
+
+
+    setCurrentGameKey("")
+    setJoinGameTextValue("")
+  }
+  
   const newGameClickHandler = () => {
     const newGameRef = newGame(props.user)
     setCurrentGameKey(newGameRef)
