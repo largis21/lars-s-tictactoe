@@ -35,8 +35,14 @@ h4 {
   justify-content: center;
 }
 
-.content {
+.main-margins {
   width: 90vw;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
 }
 
 .navbar {
@@ -85,7 +91,8 @@ button:hover {
 }
 
 .game-root {
-  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .game-container button {
@@ -93,13 +100,10 @@ button:hover {
   height: 7rem;
   border-radius: 2rem;
   margin: .5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
   vertical-align: middle;
   font-size: 32px;
-}
-
-.game-info {
-  text-align: left;
-  position: absolute;
 }
 
 .game-info h3{
@@ -107,7 +111,6 @@ button:hover {
 }
 
 .winner-text-container {
-  position: relative;
   height: 100%;
 }
 
@@ -135,8 +138,24 @@ button:hover {
   color: rgb(252, 50, 50);
 }
 
+.chat-root {
+  background-color: rgb(240, 240, 240);
+  border-radius: .7rem;
+  width: 25vw;
+  height: 39vh;
+  box-shadow: -3px 3px 0px 0px rgba(0,0,0,0.1);
+}
+
+.send-chat-box {
+  border: 0;
+  background-color: rgb(216, 216, 216);
+  border-radius: 1em;
+  box-shadow: -3px 3px 0px 0px rgba(0,0,0,0.1);
+  padding: 1rem;
+}
+
 @media screen and (max-width: 1000px) {
-  .content {
+  .main-margins {
     width: 95vw;
   }
 }

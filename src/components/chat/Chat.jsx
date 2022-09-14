@@ -1,7 +1,7 @@
 const Chat = () => {
   return (
-    <div>
-      hei
+    <div className="chat-root">
+      <input type="text" className="send-chat-box"></input>
     </div>
   )
 }
